@@ -16,7 +16,7 @@ latestLocations.callback = (data) => {
     console.log('values ' + data);
     const dataElement = document.getElementById('data');
     if (dataElement) {
-        dataElement.innerHTML = data.map(v => `lon ${v.coords.longitude} lat ${v.coords.latitude}  ts ${v.timestamp} <br>`).join('<br>');
+        dataElement.innerHTML = data.map(v => `lon ${v.coords.longitude} lat ${v.coords.latitude} alt ${v.coords.altitude} speed ${v.coords.speed}  ts ${v.timestamp} <br>`).join('<br>');
     }
 };
 const geoLocationOptions = {

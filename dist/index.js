@@ -48,8 +48,10 @@ async function applyPositionToMap() {
     if (map) {
         let latestPosition = latestLocations.data[latestLocations.data.length - 1];
         let pos = { lat: latestPosition.coords.latitude, lng: latestPosition.coords.longitude };
-        map.setCenter(pos);
-        map.setZoom(17);
+        if (map.getZoom() < 17) {
+            map.setCenter(pos);
+            map.setZoom(17);
+        }
         const { AdvancedMarkerElement, PinElement } = await google.maps.importLibrary("marker");
         const marker = new AdvancedMarkerElement({
             position: pos,

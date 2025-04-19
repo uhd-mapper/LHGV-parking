@@ -14,10 +14,11 @@ class InteractiveValues {
 let latestLocations = new InteractiveValues();
 latestLocations.callback = (data) => {
     console.log('values ' + data);
-    const dataElement = document.getElementById('data');
-    if (dataElement) {
-        dataElement.innerHTML = data.map((v, idx) => `${idx} @ ${new Date(v.timestamp).toISOString()} [${v.coords.longitude} ${v.coords.latitude}] alt ${v.coords.altitude} speed ${v.coords.speed}`).join('<br>');
-    }
+    // const dataElement = document.getElementById('data');
+    // if(dataElement){
+    //     dataElement.innerHTML = data.map((v,idx)=>`${idx} @ ${new Date(v.timestamp).toISOString()} [${v.coords.longitude} ${v.coords.latitude}] alt ${v.coords.altitude} speed ${v.coords.speed}`).join('<br>');
+    // }
+    applyPositionToMap();
 };
 const geoLocationOptions = {
     maximumAge: 0,
@@ -29,14 +30,30 @@ navigator.geolocation.watchPosition((position) => {
 }, (err) => {
     console.log('values ' + err);
 }, geoLocationOptions);
-// function getGeoLocation(options?: PositionOptions):Promise<GeolocationPosition> {
-//     return new Promise((resolve, reject) => 
-//         navigator.geolocation.getCurrentPosition(resolve, reject, options)
-//     );
-// };
-// console.log('before async');
-// (async () => {
-//     let position = await getGeoLocation(geoLocationOptions);
-//     console.log('Hello Typescript'+position);
-// })();
-// console.log('after async');
+let map;
+const euCenter = { lat: 48.8, lng: 19.8 };
+// initMap is now async
+async function initMap() {
+    // Request libraries when needed, not in the script tag.
+    const { Map } = await google.maps.importLibrary("maps");
+    // Short namespaces can be used.
+    map = new Map(document.getElementById("map"), {
+        center: euCenter,
+        zoom: 6,
+        mapId: "123"
+    });
+}
+initMap();
+async function applyPositionToMap() {
+    if (map) {
+        let latestPosition = latestLocations.data[latestLocations.data.length - 1];
+        let pos = { lat: latestPosition.coords.latitude, lng: latestPosition.coords.longitude };
+        map.setCenter(pos);
+        map.setZoom(17);
+        const { AdvancedMarkerElement, PinElement } = await google.maps.importLibrary("marker");
+        const marker = new AdvancedMarkerElement({
+            position: pos,
+            map
+        });
+    }
+}
